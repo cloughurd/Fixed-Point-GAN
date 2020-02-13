@@ -175,7 +175,7 @@ class Solver(object):
                             c_trg[:, j] = 0
                 else:
                     c_trg[:, i] = (c_trg[:, i] == 0)  # Reverse attribute value.
-            elif dataset == 'BRATS':
+            elif dataset in ['BRATS', 'CBIS']:
                 c_trg = c_org.clone()
                 c_trg[:, i] = (c_trg[:, i] == 0)  # Reverse attribute value.
             elif dataset == 'Directory':
@@ -194,7 +194,7 @@ class Solver(object):
     def train(self):
         """Train Fixed-Point GAN within a single dataset."""
         # Set data loader.
-        if self.dataset in ['CelebA', 'BRATS', 'Directory']:
+        if self.dataset in ['CelebA', 'BRATS', 'Directory', 'CBIS']:
             data_loader = self.data_loader
 
         # Fetch fixed inputs for debugging.

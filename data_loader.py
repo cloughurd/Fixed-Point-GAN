@@ -6,6 +6,9 @@ import torch
 import os
 import random
 from glob import glob
+import pandas as pd
+import pydicom
+from sklearn.preprocessing import LabelEncoder
 
 
 class CelebA(data.Dataset):
@@ -123,6 +126,33 @@ class BRATS_SYN(data.Dataset):
         """Return the number of images."""
         return self.num_images
 
+class CBIS(data.Dataset):
+    def __init__(self, image_dir, transform, mode, target='pathology'):
+        assert target in ['pathology', 'breast_density']
+        self.image_dir = image_dir
+        self.transform = transform
+        self.mode = mode
+        self.target = target
+
+        self.data = []
+        self.load_data()
+
+    def load_data(self):
+        df = pd.read_csv(self.image_dir + self.mode + '.csv', index_col=0)
+        le = LabelEncoder()
+        df['label'] = le.fit_transform(df[self.target])
+        for _, row in df.iterrows():
+            path = self.image_dir + self.mode + '/' + row['full_fn']
+            label = row['label']
+            self.data.append((path, label))
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, index):
+        path, label = self.data[index]
+        img = pydicom.dcmread(path)
+        return self.transform(img), torch.FloatTensor(label)
 
 def get_loader(image_dir, attr_path, selected_attrs, crop_size=178, image_size=128, 
                batch_size=16, dataset='CelebA', mode='train', num_workers=1):
@@ -140,6 +170,8 @@ def get_loader(image_dir, attr_path, selected_attrs, crop_size=178, image_size=1
         dataset = CelebA(image_dir, attr_path, selected_attrs, transform, mode)
     elif dataset == 'BRATS':
         dataset = BRATS_SYN(image_dir, transform, mode)
+    elif dataset == 'CBIS':
+        dataset = CBIS(image_dir, transform, mode)
     elif dataset == 'Directory':
         dataset = ImageFolder(image_dir, transform)
 
