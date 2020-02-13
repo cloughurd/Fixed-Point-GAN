@@ -35,7 +35,7 @@ def main(config):
 
     elif config.dataset in ['BRATS', 'CBIS']:
         data_loader = get_loader(config.image_dir, None, None,
-                                   config.crop_size, (config.image_size_h, config.image_size_w), config.batch_size,
+                                   (config.crop_size_h, config.crop_size_w), config.image_size, config.batch_size,
                                    config.dataset, config.mode, config.num_workers)
 
 
