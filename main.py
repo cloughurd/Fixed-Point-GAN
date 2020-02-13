@@ -24,6 +24,8 @@ def main(config):
 
     # Data loader.
     data_loader = None
+    if config.image_size_w is None:
+        config.image_size_w = config.image_size_h
 
     if config.dataset in ['CelebA']:
         data_loader = get_loader(config.image_dir, config.attr_path, config.selected_attrs,
@@ -31,10 +33,10 @@ def main(config):
                                    'CelebA', config.mode, config.num_workers)
 
 
-    elif config.dataset in ['BRATS']:
+    elif config.dataset in ['BRATS', 'CBIS']:
         data_loader = get_loader(config.image_dir, None, None,
-                                   config.crop_size, config.image_size, config.batch_size,
-                                   'BRATS', config.mode, config.num_workers)
+                                   config.crop_size, (config.image_size_h, config.image_size_w), config.batch_size,
+                                   config.dataset, config.mode, config.num_workers)
 
 
     elif config.dataset in ['Directory']:
@@ -64,7 +66,8 @@ if __name__ == '__main__':
     # Model configuration.
     parser.add_argument('--c_dim', type=int, default=5, help='dimension of domain labels (1st dataset)')
     parser.add_argument('--c2_dim', type=int, default=8, help='dimension of domain labels (2nd dataset)')
-    parser.add_argument('--crop_size', type=int, default=178, help='crop size for the images')
+    parser.add_argument('--crop_size_h', type=int, default=178, help='crop height for the images')
+    parser.add_argument('--crop_size_w', type=int, default=None, help='crop width for the images')
     parser.add_argument('--image_size', type=int, default=128, help='image resolution')
     parser.add_argument('--g_conv_dim', type=int, default=64, help='number of conv filters in the first layer of G')
     parser.add_argument('--d_conv_dim', type=int, default=64, help='number of conv filters in the first layer of D')
