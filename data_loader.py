@@ -151,7 +151,7 @@ class CBIS(data.Dataset):
 
     def __getitem__(self, index):
         path, label = self.data[index]
-        img = pydicom.dcmread(path)
+        img = pydicom.dcmread(path).pixel_array
         return self.transform(img), torch.FloatTensor(label)
 
 def get_loader(image_dir, attr_path, selected_attrs, crop_size=178, image_size=128, 
