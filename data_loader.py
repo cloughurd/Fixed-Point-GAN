@@ -9,6 +9,7 @@ from glob import glob
 import pandas as pd
 import pydicom
 from sklearn.preprocessing import LabelEncoder
+import numpy as np
 
 
 class CelebA(data.Dataset):
@@ -151,19 +152,21 @@ class CBIS(data.Dataset):
 
     def __getitem__(self, index):
         path, label = self.data[index]
-        img = Image.fromarray(pydicom.dcmread(path).pixel_array)
-        return self.transform(img), torch.FloatTensor(label)
+        img = pydicom.dcmread(path).pixel_array.astype(np.int32)
+        return self.transform(img), torch.FloatTensor([label])
 
 def get_loader(image_dir, attr_path, selected_attrs, crop_size=178, image_size=128, 
                batch_size=16, dataset='CelebA', mode='train', num_workers=1):
     """Build and return a data loader."""
     transform = []
+    if dataset == 'CBIS':
+        transform.append(T.ToPILImage())
     if mode == 'train':
         transform.append(T.RandomHorizontalFlip())
     transform.append(T.CenterCrop(crop_size))
     transform.append(T.Resize(image_size))
     transform.append(T.ToTensor())
-    transform.append(T.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5)))
+#     transform.append(T.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5)))
     transform = T.Compose(transform)
 
     if dataset == 'CelebA':
