@@ -72,7 +72,7 @@ class Solver(object):
 
     def build_model(self):
         """Create a generator and a discriminator."""
-        if self.dataset in ['CelebA', 'BRATS', 'Directory']:
+        if self.dataset in ['CelebA', 'BRATS', 'Directory', 'CBIS']:
             self.G = Generator(self.g_conv_dim, self.c_dim, self.g_repeat_num)
             self.D = Discriminator(self.image_size, self.d_conv_dim, self.c_dim, self.d_repeat_num) 
 
@@ -233,7 +233,7 @@ class Solver(object):
             rand_idx = torch.randperm(label_org.size(0))
             label_trg = label_org[rand_idx]
 
-            if self.dataset in ['CelebA', 'BRATS']:
+            if self.dataset in ['CelebA', 'BRATS', 'CBIS']:
                 c_org = label_org.clone()
                 c_trg = label_trg.clone()
             elif self.dataset == 'Directory':

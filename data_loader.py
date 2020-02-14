@@ -128,8 +128,8 @@ class BRATS_SYN(data.Dataset):
         return self.num_images
 
 class CBIS(data.Dataset):
-    def __init__(self, image_dir, transform, mode, target='pathology'):
-        assert target in ['pathology', 'breast_density']
+    def __init__(self, image_dir, transform, mode, target='malignant'):
+        assert target in ['pathology', 'breast_density', 'malignant']
         self.image_dir = image_dir
         self.transform = transform
         self.mode = mode
@@ -152,7 +152,7 @@ class CBIS(data.Dataset):
 
     def __getitem__(self, index):
         path, label = self.data[index]
-        img = pydicom.dcmread(path).pixel_array.astype(np.int32)
+        img = pydicom.dcmread(path).pixel_array.astype(np.float32)
         return self.transform(img), torch.FloatTensor([label])
 
 def get_loader(image_dir, attr_path, selected_attrs, crop_size=178, image_size=128, 

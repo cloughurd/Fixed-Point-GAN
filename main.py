@@ -24,8 +24,8 @@ def main(config):
 
     # Data loader.
     data_loader = None
-    if config.image_size_w is None:
-        config.image_size_w = config.image_size_h
+    if config.crop_size_w is None:
+        config.crop_size_w = config.crop_size_h
 
     if config.dataset in ['CelebA']:
         data_loader = get_loader(config.image_dir, config.attr_path, config.selected_attrs,
@@ -50,7 +50,7 @@ def main(config):
     
 
     if config.mode == 'train':
-        if config.dataset in ['CelebA', 'BRATS', 'Directory']:
+        if config.dataset in ['CelebA', 'BRATS', 'Directory', 'CBIS']:
             solver.train()
     elif config.mode == 'test':
         if config.dataset in ['CelebA', 'Directory']:
@@ -79,7 +79,7 @@ if __name__ == '__main__':
     parser.add_argument('--lambda_id', type=float, default=10, help='weight for identity loss')
     
     # Training configuration.
-    parser.add_argument('--dataset', type=str, default='CelebA', choices=['CelebA', 'BRATS', 'Directory'])
+    parser.add_argument('--dataset', type=str, default='CelebA', choices=['CelebA', 'BRATS', 'Directory', 'CBIS'])
     parser.add_argument('--batch_size', type=int, default=16, help='mini-batch size')
     parser.add_argument('--num_iters', type=int, default=200000, help='number of total iterations for training D')
     parser.add_argument('--num_iters_decay', type=int, default=100000, help='number of iterations for decaying lr')
